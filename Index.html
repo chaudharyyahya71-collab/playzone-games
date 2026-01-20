@@ -1,0 +1,159 @@
+01.20 16:09
+Index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PlayZone Games</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: white;
+  text-align: center;
+}
+
+header {
+  background: #020617;
+  padding: 15px;
+  font-size: 24px;
+}
+
+.games {
+  margin-top: 40px;
+}
+
+.game-card {
+  background: #020617;
+  padding: 20px;
+  width: 220px;
+  margin: auto;
+  border-radius: 12px;
+}
+
+button {
+  padding: 10px 20px;
+  background: #22c55e;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+}
+
+.modal-content {
+  background: #020617;
+  width: 340px;
+  margin: 60px auto;
+  padding: 15px;
+  border-radius: 12px;
+}
+
+.close {
+  float: right;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+canvas {
+  background: black;
+  margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<header> PlayZone Games</header>
+
+<section class="games">
+  <div class="game-card">
+    <h3>Snake Game</h3>
+    <button onclick="openGame()">Play</button>
+  </div>
+</section>
+
+<!-- Game Modal -->
+<div id="gameModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeGame()">✖</span>
+    <canvas id="gameCanvas" width="300" height="300"></canvas>
+    <p>Use Arrow Keys</p>
+  </div>
+</div>
+
+<script>
+const modal = document.getElementById("gameModal");
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+let snake, food, dir, loop;
+
+function openGame() {
+  modal.style.display = "block";
+  startGame();
+}
+
+function closeGame() {
+  modal.style.display = "none";
+  clearInterval(loop);
+}
+
+function startGame() {
+  snake = [{x: 140, y: 140}];
+  food = randomFood();
+  dir = "RIGHT";
+  loop = setInterval(update, 120);
+}
+
+function randomFood() {
+  return {
+    x: Math.floor(Math.random() * 15) * 20,
+    y: Math.floor(Math.random() * 15) * 20
+  };
+}
+
+document.addEventListener("keydown", e => {
+  if (e.key === "ArrowUp" && dir !== "DOWN") dir = "UP";
+  if (e.key === "ArrowDown" && dir !== "UP") dir = "DOWN";
+  if (e.key === "ArrowLeft" && dir !== "RIGHT") dir = "LEFT";
+  if (e.key === "ArrowRight" && dir !== "LEFT") dir = "RIGHT";
+});
+
+function update() {
+  ctx.clearRect(0,0,300,300);
+
+  let head = {...snake[0]};
+  if (dir === "UP") head.y -= 20;
+  if (dir === "DOWN") head.y += 20;
+  if (dir === "LEFT") head.x -= 20;
+  if (dir === "RIGHT") head.x += 20;
+
+  snake.unshift(head);
+
+  if (head.x === food.x && head.y === food.y) {
+    food = randomFood();
+  } else {
+    snake.pop();
+  }
+
+  ctx.fillStyle = "red";
+  ctx.fillRect(food.x, food.y, 20, 20);
+
+  ctx.fillStyle = "lime";
+  snake.forEach(s => ctx.fillRect(s.x, s.y, 20, 20));
+}
+</script>
+
+</body>
+</html>
